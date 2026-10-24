@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>우리 딸 사진 앨범 💗</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 35px 16px;
+      font-family: "Malgun Gothic", sans-serif;
+      text-align: center;
+      color: #55434b;
+      background: linear-gradient(135deg, #fff5f8, #ffe0eb);
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-size: clamp(25px, 5vw, 40px);
+      margin: 10px 0;
+    }
+
+    .subtitle {
+      color: #987b88;
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .heart-area {
+      position: relative;
+      display: inline-block;
+      margin: 8px 0;
+    }
+
+    #heartButton {
+      border: none;
+      background: transparent;
+      color: #ff527f;
+      font-size: 88px;
+      cursor: pointer;
+      filter: drop-shadow(0 6px 8px #ef91b5);
+      transition: transform 0.2s;
+      line-height: 1.2;
+    }
+
+    #heartButton:hover {
+      transform: scale(1.12);
+    }
+
+    #heartButton:active {
+      transform: scale(0.9);
+    }
+
+    .hint {
+      color: #e85d88;
+      margin: 8px 0 25px;
+    }
+
+    .album {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 14px;
+      border: 2px solid #ffc0d3;
+      border-radius: 24px;
+      background: #ffffffd9;
+      box-shadow: 0 12px 35px #d89bad35;
+    }
+
+    .photo-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px;
+      background: #fff4f8;
+    }
+
+    #daughterPhoto {
+      width: 100%;
+      height: 470px;
+      display: block;
+      object-fit: contain;
+      transition: opacity 0.25s, transform 0.3s;
+    }
+
+    #daughterPhoto.changing {
+      opacity: 0.3;
+      transform: scale(0.97);
+    }
+
+    .photo-number {
+      margin: 15px 0 8px;
+      font-size: 14px;
+      color: #a17c8c;
+    }
+
+    .progress {
+      height: 5px;
+      background: #ffe0e9;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 5px 15px;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 11.11%;
+      background: #ff6d98;
+      transition: width 0.3s;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .controls button {
+      border: none;
+      border-radius: 25px;
+      padding: 12px 19px;
+      background: #ffe3ec;
+      color: #bd4f76;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .controls button:hover {
+      background: #ffc7d9;
+      transform: translateY(-2px);
+    }
+
+    .controls .random {
+      background: #ff638d;
+      color: white;
+    }
+
+    .controls .random:hover {
+      background: #ed4778;
+    }
+
+    #caption {
+      color: #e65b83;
+      font-size: 19px;
+      margin: 18px 0 5px;
+    }
+
+    .footer {
+      margin-top: 25px;
+      color: #b28c9b;
+      font-size: 13px;
+    }
+
+    /* 댓글 영역 */
+    .comments {
+      max-width: 620px;
+      margin: 30px auto 0;
+      padding: 20px;
+      border: 2px solid #ffc0d3;
+      border-radius: 24px;
+      background: #ffffffd9;
+      box-shadow: 0 12px 35px #d89bad35;
+      text-align: left;
+    }
+
+    .comments h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      color: #e65b83;
+      text-align: center;
+    }
+
+    /* 터지는 하트 효과 */
+    .burst-heart {
+      position: fixed;
+      z-index: 1000;
+      pointer-events: none;
+      font-size: 22px;
+      animation: burst 850ms ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.5) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform:
+          translate(var(--x), var(--y))
+          scale(1.5)
+          rotate(var(--rotate));
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 22px 12px;
+      }
+
+      #daughterPhoto {
+        height: 55vh;
+        max-height: 440px;
+      }
+
+      #heartButton {
+        font-size: 75px;
+      }
+
+      .controls {
+        gap: 8px;
+      }
+
+      .controls button {
+        padding: 11px 14px;
+        font-size: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>💕 또율몬 사진 앨범 💕</h1>
+
+  <p class="subtitle">
+    세상에서 가장 사랑스러운 우리 딸<br>
+    하트를 누르면 사랑이 팡팡 터져요!
+  </p>
+
+  <div class="heart-area">
+    <button id="heartButton" aria-label="하트 효과와 랜덤 사진">
+      ♥
+    </button>
+  </div>
+
+  <p class="hint" id="hint">하트를 눌러보세요! 💗</p>
+
+  <main class="album">
+    <div class="photo-wrap">
+      <img
+        id="daughterPhoto"
+        src="photos/daughter1.jpg"
+        alt="또율 사진"
+      >
+    </div>
+
+    <div class="photo-number" id="photoNumber">
+      1 / 9
+    </div>
+
+    <div class="progress">
+      <div id="progressBar"></div>
+    </div>
+
+    <div class="controls">
+      <button id="prevButton">❮ 이전</button>
+      <button id="randomButton" class="random">🎲 랜덤 보기</button>
+      <button id="nextButton">다음 ❯</button>
+    </div>
+
+    <div id="caption">오늘도 예쁜 우리 또율 ♥</div>
+  </main>
+
+  <p class="footer">
+    매일 봐도 사랑스러운 우리 또율을 위한 공간 💖
+  </p>
+
+  <section class="comments">
+    <h2>💌 또율에게 한마디</h2>
+    <div id="disqus_thread"></div>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+    </noscript>
+  </section>
+
+  <script>
+    // 사진 9장의 파일명입니다.
+    const photos = [
+      "photos/daughter1.jpg",
+      "photos/daughter2.jpg",
+      "photos/daughter3.jpg",
+      "photos/daughter4.jpg",
+      "photos/daughter5.jpg",
+      "photos/daughter6.jpg",
+      "photos/daughter7.jpg",
+      "photos/daughter8.jpg",
+      "photos/daughter9.jpg"
+    ];
+
+    let currentIndex = 0;
+
+    const photo = document.getElementById("daughterPhoto");
+    const heartButton = document.getElementById("heartButton");
+    const hint = document.getElementById("hint");
+    const photoNumber = document.getElementById("photoNumber");
+    const progressBar = document.getElementById("progressBar");
+    const caption = document.getElementById("caption");
+
+    // 사진 변경 및 번호 업데이트
+    function showPhoto(index) {
+      currentIndex = (index + photos.length) % photos.length;
+
+      photo.classList.add("changing");
+
+      const newSrc = photos[currentIndex];
+
+      photo.onload = function () {
+        photo.classList.remove("changing");
+        hint.textContent = "사랑스러운 우리 딸 사진 💗";
+      };
+
+      photo.onerror = function () {
+        photo.classList.remove("changing");
+        hint.textContent =
+          "사진을 찾을 수 없어요. 파일명과 폴더를 확인해주세요.";
+      };
+
+      photo.src = newSrc;
+
+      photoNumber.textContent =
+        `${currentIndex + 1} / ${photos.length}`;
+
+      progressBar.style.width =
+        `${((currentIndex + 1) / photos.length) * 100}%`;
+
+      caption.textContent = "오늘도 예쁜 우리 딸 ♥";
+    }
+
+    // 하트 주변으로 작은 하트가 퍼지는 효과
+    function burstHearts() {
+      const rect = heartButton.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const hearts = ["💗", "💖", "💕", "💓", "❤️"];
+
+      for (let i = 0; i < 18; i++) {
+        const heart = document.createElement("span");
+
+        heart.className = "burst-heart";
+        heart.textContent =
+          hearts[Math.floor(Math.random() * hearts.length)];
+
+        heart.style.left = `${centerX}px`;
+        heart.style.top = `${centerY}px`;
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 70 + Math.random() * 140;
+
+        heart.style.setProperty(
+          "--x",
+          `${Math.cos(angle) * distance}px`
+        );
+
+        heart.style.setProperty(
+          "--y",
+          `${Math.sin(angle) * distance}px`
+        );
+
+        heart.style.setProperty(
+          "--rotate",
+          `${Math.random() * 100 - 50}deg`
+        );
+
+        document.body.appendChild(heart);
+
+        heart.addEventListener("animationend", function () {
+          heart.remove();
+        });
+      }
+    }
+
+    // 하트: 하트 효과 + 랜덤 사진
+    heartButton.addEventListener("click", function () {
+      burstHearts();
+
+      let randomIndex = currentIndex;
+
+      if (photos.length > 1) {
+        while (randomIndex === currentIndex) {
+          randomIndex = Math.floor(Math.random() * photos.length);
+        }
+      }
+
+      showPhoto(randomIndex);
+
+      heartButton.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.25)" },
+          { transform: "scale(1)" }
+        ],
+        {
+          duration: 300,
+          easing: "ease-out"
+        }
+      );
+    });
+
+    // 이전 사진
+    document.getElementById("prevButton").addEventListener(
+      "click",
+      function () {
+        showPhoto(currentIndex - 1);
+      }
+    );
+
+    // 다음 사진
+    document.getElementById("nextButton").addEventListener(
+      "click",
+      function () {
+        showPhoto(currentIndex + 1);
+      }
+    );
+
+    // 랜덤 사진
+    document.getElementById("randomButton").addEventListener(
+      "click",
+      function () {
+        let randomIndex = currentIndex;
+
+        if (photos.length > 1) {
+          while (randomIndex === currentIndex) {
+            randomIndex = Math.floor(Math.random() * photos.length);
+          }
+        }
+
+        showPhoto(randomIndex);
+      }
+    );
+
+    // 첫 번째 사진 표시
+    showPhoto(0);
+
+    // Disqus 댓글 (페이지가 하나라서 고정 식별자를 씁니다)
+    var disqus_config = function () {
+      this.page.identifier = "soyul-album";
+    };
+
+    (function () {
+      const d = document;
+      const s = d.createElement("script");
+      s.src = "https://soyul.disqus.com/embed.js";
+      s.setAttribute("data-timestamp", +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+</body>
+</html>
